@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+        urlshortener_nginx:
+             depends_on:
+                    - urlshortener_php
+             image: nginx:alpine
+             container_name: urlshortener_nginx
+             volumes:
+                 - ./code/public/api:/var/www/backend
+                 - ./nginx/conf.d:/etc/nginx/conf.d
+             ports:
+                 - 8080:80
+                 - 443:443 
+             networks:
+                 - app-network
+        
+        urlshortener_php: 
+             image: php:7.4-fpm-alpine
+             container_name: urlshortener_php
+             volumes:
+                     - ./code/public/api:/var/www/backend
+             networks:
+                     - app-network
+
+        urlshortener_composer:
+             image: composer:1.9
+             command: ['composer', 'install']
+             volumes:
+                     - ./code/public/api:/app
+
+        urlshortener_mariadb:
+             image: mariadb
+             environment:
+                 MYSQL_ROOT_PASSWORD: 1q2w3e4r
+             volumes:
+                 - ./data:/var/lib/mysql
+               
+networks:
+  app-network:
+    driver: bridge
