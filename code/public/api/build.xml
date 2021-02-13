@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<project name="Frontend" default="build-dev" basedir="." description="Mobomatic frontend build file for Phing.">
+    <target name="build-dev">
+        <phingcall target="copy-env"/>
+        <phingcall target="composer-install"/>
+        <phingcall target="restoredb-dev"/>
+    </target>
+
+    <target name="build-test">
+        <phingcall target="copy-env"/>
+        <phingcall target="composer-install"/>
+        <phingcall target="restoredb-test"/>
+    </target>
+
+
+
+    <target name="restoredb-test">
+        <phingcall target="dropdb-test"/>
+        <phingcall target="createdb-test"/>
+        <phingcall target="updatedb-test"/>
+    </target>
+
+    <target name="restoredb-dev">
+        <phingcall target="dropdb-dev"/>
+        <phingcall target="createdb-dev"/>
+        <phingcall target="updatedb-dev"/>
+
+    </target>
+
+
+
+
+    <target name="dropdb-dev">
+        <exec command="./bin/console doctrine:database:drop -e dev --force" checkreturn="false"/>
+    </target>
+
+    <target name="createdb-dev">
+        <exec command="./bin/console doctrine:database:create -e dev" checkreturn="true" passthru="true"/>
+    </target>
+
+    <target name="dropdb-test">
+        <exec command="./bin/console doctrine:database:drop -e test --force" checkreturn="false"/>
+    </target>
+
+    <target name="createdb-test">
+        <exec command="./bin/console doctrine:database:create -e test" checkreturn="true" passthru="true"/>
+    </target>
+
+    <target name="updatedb-dev">
+        <exec command="./bin/console doctrine:migrations:migrate -e dev -n" checkreturn="true" passthru="true" />
+    </target>
+
+    <target name="updatedb-test">
+        <exec command="./bin/console doctrine:migrations:migrate -e test -n" checkreturn="true" passthru="true" />
+    </target>
+
+    <target name="composer-install">
+
+        <exec command="composer install" checkreturn="true" passthru="true" />
+    </target>
+
+
+    <target name="copy-env">
+        <copy file=".env.dist" tofile=".env" overwrite="true"/>
+    </target>
+
+
+</project>

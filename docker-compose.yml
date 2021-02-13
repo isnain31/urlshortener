@@ -9,6 +9,7 @@ services:
              volumes:
                  - ./code/public/api:/var/www/backend
                  - ./nginx/conf.d:/etc/nginx/conf.d
+
              ports:
                  - 8080:80
                  - 443:443 
@@ -20,17 +21,21 @@ services:
              container_name: urlshortener_php
              volumes:
                      - ./code/public/api:/var/www/backend
+             working_dir: /var/www/backend
+             user: ${HOST_USER}
              networks:
                      - app-network
 
         urlshortener_composer:
              image: composer:1.9
-             command: ['composer', 'install']
+             command: ['composer', 'update']
+             user: ${HOST_USER}
              volumes:
                      - ./code/public/api:/app
 
         urlshortener_mariadb:
              image: mariadb
+             user: ${HOST_USER}
              environment:
                  MYSQL_ROOT_PASSWORD: 1q2w3e4r
              volumes:

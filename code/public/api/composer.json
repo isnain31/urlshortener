@@ -9,9 +9,15 @@
         "symfony/dotenv": "4.4.*",
         "symfony/flex": "^1.3.1",
         "symfony/framework-bundle": "4.4.*",
-        "symfony/yaml": "4.4.*"
+        "symfony/yaml": "4.4.*",
+        "doctrine/doctrine-bundle": "^1.6",
+        "doctrine/doctrine-migrations-bundle": "^1.3",
+        "doctrine/orm": "^2.5",
+        "incenteev/composer-parameter-handler": "^2.0",
+        "friendsofsymfony/rest-bundle": "^2.5"
     },
     "require-dev": {
+        "phing/phing": "2.*"
     },
     "config": {
         "preferred-install": {
@@ -38,14 +44,19 @@
         "symfony/polyfill-php56": "*"
     },
     "scripts": {
+        "symfony-scripts": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
+        ],
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
+            "@symfony-scripts",
             "@auto-scripts"
         ],
         "post-update-cmd": [
+            "@symfony-scripts",
             "@auto-scripts"
         ]
     },
@@ -53,6 +64,20 @@
         "symfony/symfony": "*"
     },
     "extra": {
+        "incenteev-parameters": [
+            {
+                "file": "config/packages/dev/parameters.yaml",
+                "dist-file": "config/parameters.yaml.dist"
+            },
+            {
+                "file": "config/packages/prod/parameters.yaml",
+                "dist-file": "config/parameters.yaml.dist"
+            },
+            {
+                "file": "config/packages/test/parameters.yaml",
+                "dist-file": "config/parameters_test.yaml.dist"
+            }
+        ],
         "symfony": {
             "allow-contrib": false,
             "require": "4.4.*"
