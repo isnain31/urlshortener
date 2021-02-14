@@ -17,29 +17,46 @@ services:
                  - app-network
         
         urlshortener_php: 
-             image: php:7.4-fpm-alpine
+             depends_on:
+                    - urlshortener_mariadb
              container_name: urlshortener_php
              volumes:
                      - ./code/public/api:/var/www/backend
              working_dir: /var/www/backend
-             user: ${HOST_USER}
+             build:
+                    context: ./docker
+                    dockerfile: Dockerfile
+                    args:
+                         - HOST_USER=${HOST_USER}
+                         - HOST_USER_GROUP=${HOST_USER_GROUP}
+                         - ENV=${ENV}
              networks:
                      - app-network
 
-        urlshortener_composer:
-             image: composer:1.9
-             command: ['composer', 'update']
-             user: ${HOST_USER}
-             volumes:
-                     - ./code/public/api:/app
 
         urlshortener_mariadb:
              image: mariadb
-             user: ${HOST_USER}
              environment:
                  MYSQL_ROOT_PASSWORD: 1q2w3e4r
              volumes:
                  - ./data:/var/lib/mysql
+             ports:
+                 - "9906:3306"
+             networks:
+                     - app-network
+
+        urlshortener_phpmyadmin:
+           depends_on:
+               - urlshortener_mariadb
+           image: phpmyadmin/phpmyadmin
+           restart: always
+           ports:
+             - 8082:80
+           environment:
+             PMA_HOST: urlshortener_mariadb
+             MYSQL_ROOT_PASSWORD: 1q2w3e4r
+           networks:
+                     - app-network
                
 networks:
   app-network:
